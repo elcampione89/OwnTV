@@ -14,7 +14,7 @@ import org.json.JSONObject
  * Settings, put it in [API_KEY]; otherwise leave it blank.
  */
 object OwnTVPanel {
-    const val API_URL = "https://blacksheep.lol/owntv/api/"
+    const val API_URL = "https://blacksheep.lol/wow/owntv-panel/api/"
     const val API_KEY = ""
 
     /** Hide the server URL in the add/edit forms when a portal comes from the panel. */
