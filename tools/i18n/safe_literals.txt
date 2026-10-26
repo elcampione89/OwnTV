@@ -195,6 +195,21 @@
 1	url	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	w1280
 1	technical	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	·
 1	technical	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	◀
+1	empty	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	\0
+1	protocol	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Accept
+1	log	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Panel reply has no portal list
+1	log	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Panel returned HTTP ${response.code}
+1	protocol	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	X-OwnTV-Key
+1	mime	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	application/json
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	epg_url
+1	url	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	https://blacksheep.lol/owntv/api/
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	id
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	name
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	portals
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	type
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	url
+1	json	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	user_agent
+2	protocol	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	xc
 5	empty	app/src/main/java/tv/own/owntv/features/profiles/ProfileComponents.kt	\0
 1	technical	app/src/main/java/tv/own/owntv/features/profiles/ProfilePictureChooser.kt	bmp
 1	technical	app/src/main/java/tv/own/owntv/features/profiles/ProfilePictureChooser.kt	jpeg

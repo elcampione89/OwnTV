@@ -81,7 +81,7 @@ fun PanelPortalPickerScreen(
                 StageSettingRow(
                     icon = OwnTVIcon.REFRESH,
                     title = retry,
-                    desc = stringResource(R.string.panel_load_failed) + " — " + s.message,
+                    desc = stringResource(R.string.panel_load_failed_detail, s.message),
                     value = SettingValue.Action(retry),
                     onClick = { attempt++ },
                     help = SettingHelp(retry, s.message, hints = hints),

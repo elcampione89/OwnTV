@@ -7,6 +7,7 @@
     <string name="panel_choose_service" translatable="false">Choose your service</string>
     <string name="panel_loading" translatable="false">Loading services…</string>
     <string name="panel_load_failed" translatable="false">Couldn\'t load services</string>
+    <string name="panel_load_failed_detail" translatable="false">Couldn\'t load services — %1$s</string>
     <string name="panel_retry" translatable="false">Try again</string>
     <string name="panel_no_services" translatable="false">No services are available yet</string>
     <string name="panel_service_line" translatable="false">Log in to %1$s</string>
