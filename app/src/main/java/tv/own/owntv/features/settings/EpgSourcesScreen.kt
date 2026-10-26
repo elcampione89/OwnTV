@@ -226,7 +226,8 @@ private fun EpgRow(
         stringResource(R.string.settings_epg_sources_portal_guide)
     } else {
         // Never the account's user name and password: an XMLTV address often carries both.
-        tv.own.owntv.core.network.HttpClient.redactUrl(source.url)
+        if (tv.own.owntv.features.panel.PanelConfig.hidesUrl(source.url)) stringResource(R.string.panel_server_managed)
+        else tv.own.owntv.core.network.HttpClient.redactUrl(source.url)
     }
     val catchupNote = count?.third?.takeIf { it > 0 }?.let {
         pluralStringResource(R.plurals.settings_epg_sources_catchup, it, it)

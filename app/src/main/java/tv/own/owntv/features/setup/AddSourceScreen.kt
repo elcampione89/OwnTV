@@ -501,7 +501,9 @@ fun AddSourceScreen(
 
         when (kind) {
             SourceKind.XTREAM -> {
-                if (fromPanel && tv.own.owntv.features.panel.OwnTVPanel.HIDE_SERVER_URLS) {
+                val hideServer = (fromPanel && tv.own.owntv.features.panel.PanelConfig.options.value.hideServerUrls) ||
+                    (initial?.type == SourceType.XTREAM && tv.own.owntv.features.panel.PanelConfig.hidesUrl(initial.url))
+                if (hideServer) {
                     // Server comes from the panel and is not shown or editable.
                 } else {
                     field(stringResource(R.string.setup_server_url), server, { server = it }, placeholder = stringResource(R.string.setup_server_example), keyboardType = KeyboardType.Uri)

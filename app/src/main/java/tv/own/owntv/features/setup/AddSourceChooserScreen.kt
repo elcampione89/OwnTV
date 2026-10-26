@@ -2,6 +2,7 @@ package tv.own.owntv.features.setup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -52,6 +53,8 @@ fun AddSourceChooserScreen(
                 help = SettingHelp(panel, stringResource(R.string.panel_login_help), hints = hints),
             )
         }
+        val panelOnly = onPanel != null && tv.own.owntv.features.panel.PanelConfig.options.collectAsState().value.panelOnly
+        if (panelOnly) return@StageFullPage
         val phone = stringResource(R.string.setup_from_phone)
         StageSettingRow(
             icon = OwnTVIcon.PHONE,

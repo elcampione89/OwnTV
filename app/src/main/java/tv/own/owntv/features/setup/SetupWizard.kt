@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -542,6 +543,7 @@ private fun AvatarStrip(ids: List<Int>, chosen: Int) {
 @Composable
 private fun AddContentStep(hasExisting: Boolean, onPanel: () -> Unit, onPhone: () -> Unit, onType: () -> Unit, onExisting: () -> Unit, onImport: () -> Unit, onSkip: () -> Unit) {
     val first = rememberFirstFocus()
+    val panelOnly = tv.own.owntv.features.panel.PanelConfig.options.collectAsState().value.panelOnly
     WizardFrame(
         step = WizardStep.PLAYLIST,
         title = stringResource(R.string.setup_add_playlist),
@@ -554,8 +556,8 @@ private fun AddContentStep(hasExisting: Boolean, onPanel: () -> Unit, onPhone: (
         WizardCards(
             listOfNotNull(
                 WizardCard(OwnTVIcon.LIVE_TV, stringResource(R.string.panel_login), stringResource(R.string.panel_login_line), onPanel),
-                WizardCard(OwnTVIcon.PHONE, stringResource(R.string.setup_from_phone), stringResource(R.string.setup_phone_card_line), onPhone),
-                WizardCard(OwnTVIcon.PENCIL, stringResource(R.string.settings_add_type_here), stringResource(R.string.settings_line_add_type_here), onType),
+                if (panelOnly) null else WizardCard(OwnTVIcon.PHONE, stringResource(R.string.setup_from_phone), stringResource(R.string.setup_phone_card_line), onPhone),
+                if (panelOnly) null else WizardCard(OwnTVIcon.PENCIL, stringResource(R.string.settings_add_type_here), stringResource(R.string.settings_line_add_type_here), onType),
                 if (hasExisting) WizardCard(OwnTVIcon.PLAYLIST, stringResource(R.string.setup_existing), stringResource(R.string.setup_use_other_profile_playlists), onExisting) else null,
                 WizardCard(OwnTVIcon.DOWNLOADS, stringResource(R.string.setup_import), stringResource(R.string.setup_restore_backup_file), onImport),
             ),

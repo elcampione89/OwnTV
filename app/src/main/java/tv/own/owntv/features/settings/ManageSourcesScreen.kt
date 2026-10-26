@@ -403,7 +403,7 @@ private fun SourceRow(
             SourceType.STALKER -> R.string.settings_sources_type_stalker
             SourceType.LOCAL_BACKUP -> R.string.settings_sources_backup
         },
-        source.url,
+        if (tv.own.owntv.features.panel.PanelConfig.hidesUrl(source.url)) stringResource(R.string.panel_server_managed) else source.url,
     )
     val visibleCounts = if (activeSync == null) counts?.breakdownText() else activeCounts?.displayText()
     val sep = stringResource(R.string.settings_sources_details_separator)

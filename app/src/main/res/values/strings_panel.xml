@@ -11,5 +11,6 @@
     <string name="panel_retry" translatable="false">Try again</string>
     <string name="panel_no_services" translatable="false">No services are available yet</string>
     <string name="panel_service_line" translatable="false">Log in to %1$s</string>
-    <string name="panel_server_managed" translatable="false">Managed by the panel</string>
+    <string name="panel_server_managed" translatable="false">Managed by your service</string>
+    <string name="panel_announcement" translatable="false">Announcement</string>
 </resources>

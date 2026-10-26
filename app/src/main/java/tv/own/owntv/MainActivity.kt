@@ -375,6 +375,15 @@ open class MainActivity : ComponentActivity() {
                         if (background.showsPicture) BackgroundLayer(background, blurred)
 
                         Box(modifier = Modifier.fillMaxSize()) {
+                        // OwnTV Panel mod: the panel's announcement, once per message.
+                        val panelAnnouncement by tv.own.owntv.features.panel.PanelConfig.announcement.collectAsStateWithLifecycle()
+                        panelAnnouncement?.let { a ->
+                            tv.own.owntv.ui.stage.StageNotice(
+                                title = a.title.ifBlank { androidx.compose.ui.res.stringResource(R.string.panel_announcement) },
+                                body = a.text.ifBlank { null },
+                                onDismiss = { tv.own.owntv.features.panel.PanelConfig.dismissAnnouncement(this@MainActivity) },
+                            )
+                        }
                         val profile = activeProfileId
                         when {
                             profile == null || !profilesLoaded -> Unit // active id / Room list loading

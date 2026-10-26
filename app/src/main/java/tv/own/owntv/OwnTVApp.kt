@@ -130,9 +130,18 @@ class OwnTVApp : Application(), SingletonImageLoader.Factory, androidx.work.Conf
         )
         // The Stage UI's own defaults, once per install: Docked · Compact rail, glass
         // on at 50%, the Stage background; Movies & Series keep an update's layout.
+        tv.own.owntv.features.panel.PanelConfig.load(this)
         appScope.launch {
             runCatching {
                 GlobalContext.get().get<tv.own.owntv.core.settings.SettingsRepository>().applyStageDefaults()
+            }
+            // OwnTV Panel mod: after the install defaults, so the panel's settings win over them.
+            runCatching {
+                tv.own.owntv.features.panel.PanelConfig.sync(
+                    this@OwnTVApp,
+                    GlobalContext.get().get<okhttp3.OkHttpClient>(),
+                    GlobalContext.get().get<tv.own.owntv.core.backup.BackupManager>(),
+                )
             }
         }
         // Sports: core decides from Auto rebuild whether the stored board is due ("on every app start",
