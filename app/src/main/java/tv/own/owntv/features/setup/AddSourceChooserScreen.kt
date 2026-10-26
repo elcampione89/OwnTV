@@ -21,6 +21,7 @@ import tv.own.owntv.ui.components.OwnTVIcon
 fun AddSourceChooserScreen(
     onRemote: () -> Unit,
     onManual: () -> Unit,
+    onPanel: (() -> Unit)? = null,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -40,6 +41,17 @@ fun AddSourceChooserScreen(
         rowsFocus = rowsFocus,
         settingsRoot = false,
     ) {
+        if (onPanel != null) {
+            val panel = stringResource(R.string.panel_login)
+            StageSettingRow(
+                icon = OwnTVIcon.LIVE_TV,
+                title = panel,
+                desc = stringResource(R.string.panel_login_line),
+                value = SettingValue.Opens(null),
+                onClick = onPanel,
+                help = SettingHelp(panel, stringResource(R.string.panel_login_help), hints = hints),
+            )
+        }
         val phone = stringResource(R.string.setup_from_phone)
         StageSettingRow(
             icon = OwnTVIcon.PHONE,

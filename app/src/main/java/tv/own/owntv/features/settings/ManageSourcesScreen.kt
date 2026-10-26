@@ -82,6 +82,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     var showAdd by remember { mutableStateOf(false) }
     // Within "Add source": null = the Remote|Manual chooser, else the chosen path.
     var addMode by remember { mutableStateOf<AddMode?>(null) }
+    var panelPortal by remember { mutableStateOf<tv.own.owntv.features.panel.PanelPortal?>(null) }
     var editingSource by remember { mutableStateOf<SourceEntity?>(null) }
     var confirmDelete by remember { mutableStateOf<SourceEntity?>(null) }
     var resyncChoice by remember { mutableStateOf<SourceEntity?>(null) }
@@ -186,9 +187,16 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             when (val s = importState) {
                 SettingsViewModel.ImportState.Idle -> when (addMode) {
                     null -> AddSourceChooserScreen(
-                        onRemote = { addMode = AddMode.REMOTE },
-                        onManual = { addMode = AddMode.MANUAL },
+                        onRemote = { panelPortal = null; addMode = AddMode.REMOTE },
+                        onManual = { panelPortal = null; addMode = AddMode.MANUAL },
+                        onPanel = { addMode = AddMode.PANEL },
                         onBack = { showAdd = false },
+                        modifier = Modifier,
+                    )
+                    AddMode.PANEL -> tv.own.owntv.features.panel.PanelPortalPickerScreen(
+                        parent = stringResource(R.string.setup_add_source),
+                        onPick = { portal -> panelPortal = portal; addMode = AddMode.MANUAL },
+                        onBack = { addMode = null },
                         modifier = Modifier,
                     )
                     AddMode.REMOTE -> RemoteSetupScreen(
@@ -217,7 +225,8 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                         onRemotePayloadConsumed = { vm.consumeRemotePayload() },
                         // A newly-added playlist can be made default only when others already exist.
                         showDefaultToggle = sources.isNotEmpty(),
-                        onBack = { addMode = null },
+                        panelPortal = panelPortal,
+                        onBack = { addMode = if (panelPortal != null) AddMode.PANEL else null },
                         modifier = Modifier,
                         initial = vm.lastFailedSource, // pre-fill on retry — no re-typing after a typo
                     )
@@ -573,7 +582,7 @@ private fun ResyncChoiceDialog(
 }
 
 /** How the user chose to add a source: fill it from another device (Remote) or type it here (Manual). */
-private enum class AddMode { REMOTE, MANUAL }
+private enum class AddMode { PANEL, REMOTE, MANUAL }
 
 /**
  * Result of the row's "Test" button: is the server reachable, is the subscription still good, and how

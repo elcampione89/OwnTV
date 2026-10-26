@@ -117,8 +117,12 @@ fun AddSourceScreen(
         movies: SyncScopeChoice,
         series: SyncScopeChoice,
     ) -> Unit)? = null,
+    // OwnTV Panel mod: a portal picked from the panel. Locks the form to Xtream with this portal's
+    // server, so the user only types a username and password.
+    panelPortal: tv.own.owntv.features.panel.PanelPortal? = null,
 ) {
     val editing = initial != null
+    val fromPanel = panelPortal != null
     var kind by remember {
         mutableStateOf(
             when (initial?.type) {
@@ -368,6 +372,17 @@ fun AddSourceScreen(
         }
     }
 
+    // OwnTV Panel mod: fill the server (and the portal's optional EPG / User-Agent) from the panel.
+    LaunchedEffect(panelPortal) {
+        val portal = panelPortal ?: return@LaunchedEffect
+        if (editing) return@LaunchedEffect
+        kind = SourceKind.XTREAM
+        server = portal.url
+        if (name.isBlank()) name = portal.name
+        if (epgUrl.isBlank()) epgUrl = portal.epgUrl
+        if (userAgent.isBlank()) userAgent = portal.userAgent
+    }
+
     // Stalker add defaults: Live Now, Movies/Series Later (VOD has no bulk endpoint). Skip when
     // editing, retrying a failed add, or applying explicit choices from a remote Stalker payload.
     LaunchedEffect(kind, initial, hasRemoteStalkerScopes) {
@@ -469,7 +484,7 @@ fun AddSourceScreen(
             )
         }
         val typeTitle = stringResource(R.string.settings_source_type)
-        StageSettingRow(
+        if (!fromPanel) StageSettingRow(
             icon = OwnTVIcon.LIST,
             title = typeTitle,
             desc = stringResource(R.string.settings_line_source_type),
@@ -486,7 +501,11 @@ fun AddSourceScreen(
 
         when (kind) {
             SourceKind.XTREAM -> {
-                field(stringResource(R.string.setup_server_url), server, { server = it }, placeholder = stringResource(R.string.setup_server_example), keyboardType = KeyboardType.Uri)
+                if (fromPanel && tv.own.owntv.features.panel.OwnTVPanel.HIDE_SERVER_URLS) {
+                    // Server comes from the panel and is not shown or editable.
+                } else {
+                    field(stringResource(R.string.setup_server_url), server, { server = it }, placeholder = stringResource(R.string.setup_server_example), keyboardType = KeyboardType.Uri)
+                }
                 field(stringResource(R.string.setup_username), username, { username = it })
                 field(stringResource(if (editing) R.string.setup_password_keep else R.string.setup_password), password, { password = it }, password = true)
             }

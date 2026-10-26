@@ -67,7 +67,7 @@ import tv.own.owntv.ui.theme.mpx
 import tv.own.owntv.ui.theme.stageAccent
 import tv.own.owntv.ui.theme.stageText
 
-private enum class Step { WELCOME, DISPLAY_SIZE, DISCLAIMER, SETUP_CHOICE, SYNC_DEVICE, CREATE_PROFILE, ADD_CONTENT, ADD_SOURCE_REMOTE, ADD_SOURCE, IMPORTING, EXISTING, IMPORT_BACKUP_CHOOSER, IMPORT_BACKUP_REMOTE, IMPORT_BACKUP }
+private enum class Step { WELCOME, DISPLAY_SIZE, DISCLAIMER, SETUP_CHOICE, SYNC_DEVICE, CREATE_PROFILE, ADD_CONTENT, ADD_SOURCE_PANEL, ADD_SOURCE_REMOTE, ADD_SOURCE, IMPORTING, EXISTING, IMPORT_BACKUP_CHOOSER, IMPORT_BACKUP_REMOTE, IMPORT_BACKUP }
 
 /**
  * Onboarding for one profile. [firstRun] shows language/welcome/disclaimer; otherwise it
@@ -89,6 +89,7 @@ fun Onboarding(firstRun: Boolean, onDone: (Long?) -> Unit, onCancel: () -> Unit,
     var existing by remember { mutableStateOf<List<SourceEntity>>(emptyList()) }
     // Where "Try Again" returns to when an import fails (new source vs. linking existing).
     var importOrigin by remember { mutableStateOf(Step.ADD_SOURCE) }
+    var panelPortal by remember { mutableStateOf<tv.own.owntv.features.panel.PanelPortal?>(null) }
     // The playlist being imported, for "Importing <name>"; null when linking existing playlists.
     var importName by remember { mutableStateOf<String?>(null) }
     // Where Back from the backup-restore picker returns to (first-run choice vs. add-content step).
@@ -153,11 +154,17 @@ fun Onboarding(firstRun: Boolean, onDone: (Long?) -> Unit, onCancel: () -> Unit,
             )
             Step.ADD_CONTENT -> AddContentStep(
                 hasExisting = existing.isNotEmpty(),
-                onPhone = { step = Step.ADD_SOURCE_REMOTE },
-                onType = { step = Step.ADD_SOURCE },
+                onPanel = { step = Step.ADD_SOURCE_PANEL },
+                onPhone = { panelPortal = null; step = Step.ADD_SOURCE_REMOTE },
+                onType = { panelPortal = null; step = Step.ADD_SOURCE },
                 onExisting = { step = Step.EXISTING },
                 onImport = { backupOrigin = Step.ADD_CONTENT; step = Step.IMPORT_BACKUP_CHOOSER },
                 onSkip = { vm.finish(onDone) },
+            )
+            Step.ADD_SOURCE_PANEL -> tv.own.owntv.features.panel.PanelPortalPickerScreen(
+                parent = stringResource(R.string.setup_add_playlist),
+                onPick = { portal -> panelPortal = portal; step = Step.ADD_SOURCE },
+                onBack = { step = Step.ADD_CONTENT },
             )
             Step.ADD_SOURCE_REMOTE -> RemoteSetupScreen(
                 state = vm.remoteState.collectAsStateWithLifecycle().value,
@@ -193,7 +200,8 @@ fun Onboarding(firstRun: Boolean, onDone: (Long?) -> Unit, onCancel: () -> Unit,
                 // Submissions from the phone page land here pre-filled (type + fields).
                 remotePayload = vm.remotePayload,
                 onRemotePayloadConsumed = { vm.consumeRemotePayload() },
-                onBack = { step = Step.ADD_CONTENT },
+                onBack = { step = if (panelPortal != null) Step.ADD_SOURCE_PANEL else Step.ADD_CONTENT },
+                panelPortal = panelPortal,
                 showDefaultToggle = false, // first playlist in setup: nothing to be "default" over yet
             )
             Step.IMPORTING -> ImportProgressStep(
@@ -532,7 +540,7 @@ private fun AvatarStrip(ids: List<Int>, chosen: Int) {
 
 /** Add a playlist: From your phone, Type it here, Import (and Existing when another profile has some). */
 @Composable
-private fun AddContentStep(hasExisting: Boolean, onPhone: () -> Unit, onType: () -> Unit, onExisting: () -> Unit, onImport: () -> Unit, onSkip: () -> Unit) {
+private fun AddContentStep(hasExisting: Boolean, onPanel: () -> Unit, onPhone: () -> Unit, onType: () -> Unit, onExisting: () -> Unit, onImport: () -> Unit, onSkip: () -> Unit) {
     val first = rememberFirstFocus()
     WizardFrame(
         step = WizardStep.PLAYLIST,
@@ -545,6 +553,7 @@ private fun AddContentStep(hasExisting: Boolean, onPhone: () -> Unit, onType: ()
     ) {
         WizardCards(
             listOfNotNull(
+                WizardCard(OwnTVIcon.LIVE_TV, stringResource(R.string.panel_login), stringResource(R.string.panel_login_line), onPanel),
                 WizardCard(OwnTVIcon.PHONE, stringResource(R.string.setup_from_phone), stringResource(R.string.setup_phone_card_line), onPhone),
                 WizardCard(OwnTVIcon.PENCIL, stringResource(R.string.settings_add_type_here), stringResource(R.string.settings_line_add_type_here), onType),
                 if (hasExisting) WizardCard(OwnTVIcon.PLAYLIST, stringResource(R.string.setup_existing), stringResource(R.string.setup_use_other_profile_playlists), onExisting) else null,

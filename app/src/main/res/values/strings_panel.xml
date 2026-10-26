@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- OwnTV Panel mod. English only (translatable="false") so Weblate and lint leave them alone. -->
+<resources>
+    <string name="panel_login" translatable="false">Log in with your account</string>
+    <string name="panel_login_line" translatable="false">Pick your service, then enter your username and password</string>
+    <string name="panel_login_help" translatable="false">Services are managed in the OwnTV Panel. Pick yours, then enter the Xtream Codes username and password you were given. The server address is filled in for you.</string>
+    <string name="panel_choose_service" translatable="false">Choose your service</string>
+    <string name="panel_loading" translatable="false">Loading services…</string>
+    <string name="panel_load_failed" translatable="false">Couldn\'t load services</string>
+    <string name="panel_retry" translatable="false">Try again</string>
+    <string name="panel_no_services" translatable="false">No services are available yet</string>
+    <string name="panel_service_line" translatable="false">Log in to %1$s</string>
+    <string name="panel_server_managed" translatable="false">Managed by the panel</string>
+</resources>
