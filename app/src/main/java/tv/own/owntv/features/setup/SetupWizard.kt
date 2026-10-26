@@ -543,7 +543,8 @@ private fun AvatarStrip(ids: List<Int>, chosen: Int) {
 @Composable
 private fun AddContentStep(hasExisting: Boolean, onPanel: () -> Unit, onPhone: () -> Unit, onType: () -> Unit, onExisting: () -> Unit, onImport: () -> Unit, onSkip: () -> Unit) {
     val first = rememberFirstFocus()
-    val panelOnly = tv.own.owntv.features.panel.PanelConfig.options.collectAsState().value.panelOnly
+    val panelOptions by tv.own.owntv.features.panel.PanelConfig.options.collectAsState()
+    val panelOnly = panelOptions.panelOnly
     WizardFrame(
         step = WizardStep.PLAYLIST,
         title = stringResource(R.string.setup_add_playlist),

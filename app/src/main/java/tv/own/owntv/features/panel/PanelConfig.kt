@@ -50,22 +50,30 @@ object PanelConfig {
     val announcement: StateFlow<PanelAnnouncement?> = _announcement.asStateFlow()
 
     @Volatile private var portalUrls: Set<String> = emptySet()
+    @Volatile private var hideUrls: Boolean = OwnTVPanel.HIDE_SERVER_URLS
+
+    private fun setOptions(opts: PanelOptions) {
+        hideUrls = opts.hideServerUrls
+        _options.value = opts
+    }
 
     private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     /** Reads the last known switches. Cheap; call once at app start before any UI. */
     fun load(context: Context) {
         val p = prefs(context)
-        _options.value = PanelOptions(
-            panelOnly = p.getBoolean(K_PANEL_ONLY, false),
-            hideServerUrls = p.getBoolean(K_HIDE_URLS, OwnTVPanel.HIDE_SERVER_URLS),
+        setOptions(
+            PanelOptions(
+                panelOnly = p.getBoolean(K_PANEL_ONLY, false),
+                hideServerUrls = p.getBoolean(K_HIDE_URLS, OwnTVPanel.HIDE_SERVER_URLS),
+            ),
         )
         portalUrls = p.getStringSet(K_PORTAL_URLS, emptySet()).orEmpty()
     }
 
     /** True when [url] belongs to a panel portal and the panel says to hide server addresses. */
     fun hidesUrl(url: String?): Boolean {
-        if (url.isNullOrBlank() || !_options.value.hideServerUrls) return false
+        if (url.isNullOrBlank() || !hideUrls) return false
         val u = normalise(url)
         return portalUrls.any { u.startsWith(it) }
     }
@@ -99,7 +107,7 @@ object PanelConfig {
                 panelOnly = o.optBoolean("panel_only", false),
                 hideServerUrls = o.optBoolean("hide_server_urls", OwnTVPanel.HIDE_SERVER_URLS),
             )
-            _options.value = opts
+            setOptions(opts)
             p.edit().putBoolean(K_PANEL_ONLY, opts.panelOnly).putBoolean(K_HIDE_URLS, opts.hideServerUrls).apply()
         }
 

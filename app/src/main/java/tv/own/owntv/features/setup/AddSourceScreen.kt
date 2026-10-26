@@ -123,6 +123,7 @@ fun AddSourceScreen(
 ) {
     val editing = initial != null
     val fromPanel = panelPortal != null
+    val panelOptions by tv.own.owntv.features.panel.PanelConfig.options.collectAsStateWithLifecycle()
     var kind by remember {
         mutableStateOf(
             when (initial?.type) {
@@ -501,7 +502,7 @@ fun AddSourceScreen(
 
         when (kind) {
             SourceKind.XTREAM -> {
-                val hideServer = (fromPanel && tv.own.owntv.features.panel.PanelConfig.options.value.hideServerUrls) ||
+                val hideServer = (fromPanel && panelOptions.hideServerUrls) ||
                     (initial?.type == SourceType.XTREAM && tv.own.owntv.features.panel.PanelConfig.hidesUrl(initial.url))
                 if (hideServer) {
                     // Server comes from the panel and is not shown or editable.
