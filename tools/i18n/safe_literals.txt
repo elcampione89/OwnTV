@@ -216,6 +216,7 @@
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	__PANEL_BACKGROUND__
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	announcement
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	announcement_seen
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	applied panel keys $revision
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	applied panel look $revision
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	applied panel settings $revision
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	background HTTP ${r.code}
@@ -229,8 +230,12 @@
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	http://
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	https://
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	id
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	keys
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	keys: ${t.message}
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	keys_rev
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	look: ${t.message}
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	null
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	open_subtitles_api_key
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	options
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	owntv_panel
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel-background-
@@ -239,13 +244,14 @@
 2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel_only
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	password
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	portal_urls
-2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	revision
-2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings
+3	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	revision
+3	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings HTTP ${r.code}
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings: ${t.message}
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings_rev
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	text
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	title
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	tmdb_api_key
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	ui
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	ui_rev
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	url

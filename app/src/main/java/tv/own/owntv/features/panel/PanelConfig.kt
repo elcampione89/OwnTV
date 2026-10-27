@@ -43,6 +43,7 @@ object PanelConfig {
     private const val K_SETTINGS_REV = "settings_rev"
     private const val K_ANN_SEEN = "announcement_seen"
     private const val K_UI_REV = "ui_rev"
+    private const val K_KEYS_REV = "keys_rev"
     private const val BACKGROUND_MARKER = "__PANEL_BACKGROUND__"
     private const val BACKGROUND_PREFIX = "panel-background-"
 
@@ -129,7 +130,29 @@ object PanelConfig {
         }
 
         val settingsApplied = applySettingsFile(context, client, backup, configUrl, root.optJSONObject("settings"))
+        applyKeys(context, settingsRepo, root.optJSONObject("keys"), force = settingsApplied)
         applyLook(context, client, settingsRepo, configUrl, root.optJSONObject("ui"), force = settingsApplied)
+    }
+
+    /**
+     * Metadata & subtitles: the TMDB and OpenSubtitles API keys (secrets, so set directly rather than
+     * through the backup importer) and the metadata source / language. A key the panel doesn't send
+     * is left as the TV has it.
+     */
+    private suspend fun applyKeys(context: Context, settingsRepo: SettingsRepository, keys: JSONObject?, force: Boolean) {
+        val p = prefs(context)
+        if (keys == null) { p.edit().remove(K_KEYS_REV).apply(); return }
+        val revision = keys.optString("revision")
+        if (revision.isBlank() || (!force && revision == p.getString(K_KEYS_REV, null))) return
+        try {
+            keys.optString("tmdb_api_key").takeIf { it.isNotBlank() }?.let { settingsRepo.setTmdbApiKey(it) }
+            keys.optString("open_subtitles_api_key").takeIf { it.isNotBlank() }?.let { settingsRepo.setOpenSubtitlesApiKey(it) }
+            keys.optJSONObject("settings")?.takeIf { it.length() > 0 }?.let { settingsRepo.importSettings(it, keepDeviceSettings = false) }
+            p.edit().putString(K_KEYS_REV, revision).apply()
+            Log.i(TAG, "applied panel keys $revision")
+        } catch (t: Throwable) {
+            Log.w(TAG, "keys: ${t.message}")
+        }
     }
 
     /** The App page's settings backup. Returns true when it was (re)applied this time. */
