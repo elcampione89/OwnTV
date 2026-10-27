@@ -229,6 +229,8 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          # OwnTV Panel mod: the panel API key, baked into BuildConfig.PANEL_API_KEY.
+          OWNTV_PANEL_KEY: ${{ secrets.OWNTV_PANEL_KEY }}
           # OWNTV_EDGE_KEY is exported into $GITHUB_ENV by the step above; app/build.gradle.kts reads
           # it as the env var it always did.
         run: |

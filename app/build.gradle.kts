@@ -89,6 +89,10 @@ android {
             ?: localSigningProps.getProperty("owntv.edgeKey")
             ?: ""
         buildConfigField("String", "TMDB_EDGE_KEY", "\"${edgeKey.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
+        // OwnTV Panel mod: the panel's API key, from the OWNTV_PANEL_KEY GitHub secret so it never sits
+        // in this public repository. Blank = the panel's API is open (no key set on the panel).
+        val panelKey = System.getenv("OWNTV_PANEL_KEY") ?: providers.gradleProperty("owntv.panelKey").orNull ?: ""
+        buildConfigField("String", "PANEL_API_KEY", "\"${panelKey.filter { it.isLetterOrDigit() }}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

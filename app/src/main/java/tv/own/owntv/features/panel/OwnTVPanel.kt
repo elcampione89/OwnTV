@@ -15,7 +15,8 @@ import org.json.JSONObject
  */
 object OwnTVPanel {
     const val API_URL = "https://blacksheep.lol/wow/owntv-panel/api/"
-    const val API_KEY = ""
+    /** From the OWNTV_PANEL_KEY GitHub secret at build time (see app/build.gradle.kts). */
+    val API_KEY: String = tv.own.owntv.BuildConfig.PANEL_API_KEY
 
     /** Hide the server URL in the add/edit forms when a portal comes from the panel. */
     const val HIDE_SERVER_URLS = true
