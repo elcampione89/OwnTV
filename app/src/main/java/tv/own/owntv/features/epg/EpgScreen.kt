@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
@@ -46,6 +49,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +58,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 import org.koin.androidx.compose.koinViewModel
 import tv.own.owntv.R
 import tv.own.owntv.core.database.entity.ChannelEntity
@@ -113,6 +118,26 @@ private fun programmeAt(progs: List<EpgProgrammeEntity>?, time: Long): EpgProgra
 
 /** Across a gap the cursor moves by half an hour, rather than leaping hours to the next programme. */
 private const val GAP_STEP_MS = 30L * 60 * 1000
+
+/** Cursor passed to rows that are not focused, so a cursor move does not recompose them. */
+internal const val NO_CURSOR = -1L
+
+internal data class GuideRowFocusArgs(val selectedRow: Boolean, val cursorTime: Long, val cellMode: Boolean)
+
+internal fun guideRowFocusArgs(
+    index: Int,
+    focusedRow: Int,
+    cursorTime: Long,
+    inCellMode: Boolean,
+    gridHasFocus: Boolean,
+): GuideRowFocusArgs {
+    val sel = index == focusedRow
+    return GuideRowFocusArgs(
+        selectedRow = gridHasFocus && sel,
+        cursorTime = if (sel) cursorTime else NO_CURSOR,
+        cellMode = sel && inCellMode,
+    )
+}
 
 /** Where ◀ ([dir] -1) or ▶ (+1) takes the cursor: programme by programme, half an hour at a time across gaps. */
 private fun cursorStep(progs: List<EpgProgrammeEntity>, cursor: Long, dir: Int, windowStart: Long, windowEnd: Long): Long {
@@ -229,6 +254,7 @@ fun EpgScreen(
     val ppm = with(density) { GuideGridDefaults.PxPerMin.toPx() }
     var timelinePx by remember { mutableIntStateOf(0) }
     var scrollPx by remember { mutableIntStateOf(0) }
+    val readScrollPx = remember { { scrollPx } }
     fun pxAt(t: Long): Float = (t - state.windowStart) / 60_000f * ppm
     fun maxScroll(): Int = (pxAt(state.windowEnd) - timelinePx).toInt().coerceAtLeast(0)
     fun timeAt(px: Float): Long = state.windowStart + (px / ppm * 60_000f).toLong()
@@ -468,8 +494,7 @@ fun EpgScreen(
         }
 
         // The control line (452): one row with every guide header button.
-        val viewTime = timeAt(scrollPx + timelinePx * 3f / 8f)
-        val viewDay = localMidnight(viewTime)
+        val viewDay by remember { derivedStateOf { localMidnight(timeAt(scrollPx + timelinePx * 3f / 8f)) } }
         Row(
             Modifier.padding(start = fx(68), end = fx(64), top = 48.mpx).fillMaxWidth().height(48.mpx),
             horizontalArrangement = Arrangement.spacedBy(8.mpx),
@@ -544,7 +569,7 @@ fun EpgScreen(
                     // The number column fits the longest channel number (38 = three digits).
                     val numberWidth = maxOf(38f, (state.channels.maxOfOrNull { it.number?.toString()?.length ?: 0 } ?: 0) * 11f).mpx
                     GuideRuler(
-                        windowStart = state.windowStart, windowEnd = state.windowEnd, now = liveNow, scrollPx = scrollPx,
+                        windowStart = state.windowStart, windowEnd = state.windowEnd, now = liveNow, scrollPx = readScrollPx,
                         modifier = Modifier.padding(start = gx).width(timelineW).height(40.mpx),
                     )
                     CompositionLocalProvider(androidx.compose.foundation.gestures.LocalBringIntoViewSpec provides edgeScrollSpec) {
@@ -560,6 +585,7 @@ fun EpgScreen(
                             contentPadding = PaddingValues(bottom = 24.mpx),
                         ) {
                             itemsIndexed(state.channels, key = { _, ch -> ch.id }) { index, channel ->
+                                val focus = guideRowFocusArgs(index, focusedRow, cursorTime, inCellMode, gridHasFocus)
                                 GuideRow(
                                     vm = vm,
                                     channel = channel,
@@ -570,11 +596,11 @@ fun EpgScreen(
                                     windowStart = state.windowStart,
                                     windowEnd = state.windowEnd,
                                     now = liveNow,
-                                    scrollPx = scrollPx,
+                                    scrollPx = readScrollPx,
                                     focusRequester = rowFocus(index),
-                                    selectedRow = gridHasFocus && index == focusedRow,
-                                    cursorTime = cursorTime,
-                                    cellMode = inCellMode,
+                                    selectedRow = focus.selectedRow,
+                                    cursorTime = focus.cursorTime,
+                                    cellMode = focus.cellMode,
                                     onEnterCell = {
                                         cursorTime = System.currentTimeMillis()
                                         inCellMode = true
@@ -605,11 +631,16 @@ fun EpgScreen(
                         }
                     }
                     // The now-line, 3 px with its glow, over every row.
-                    val nowX = with(density) { (pxAt(liveNow) - scrollPx).toDp() }
-                    if (liveNow in state.windowStart..state.windowEnd && nowX >= 0.mpx && nowX <= timelineW) {
+                    if (liveNow in state.windowStart..state.windowEnd) {
+                        val timelinePxWidth = with(density) { timelineW.toPx() }
                         Box(
                             Modifier
-                                .padding(start = gx + nowX - 1.5.mpx, top = 38.mpx, bottom = 24.mpx)
+                                .padding(start = gx - 1.5.mpx, top = 38.mpx, bottom = 24.mpx)
+                                .offset { IntOffset((pxAt(liveNow) - scrollPx).roundToInt(), 0) }
+                                .graphicsLayer {
+                                    val x = pxAt(liveNow) - scrollPx
+                                    alpha = if (x >= 0f && x <= timelinePxWidth) 1f else 0f
+                                }
                                 .width(3.mpx)
                                 .fillMaxHeight()
                                 .guideNowLine(stageAccent.accent),
@@ -704,9 +735,10 @@ fun EpgScreen(
         val days = remember(state.windowStart, state.windowEnd) {
             generateSequence(localMidnight(state.windowStart)) { localMidnight(it + 36L * 60 * 60 * 1000) }.takeWhile { it < state.windowEnd }.toList()
         }
+        val currentDay by remember { derivedStateOf { localMidnight(timeAt(scrollPx + timelinePx * 3f / 8f)) } }
         GuideDayMenu(
             days = days,
-            currentDay = localMidnight(timeAt(scrollPx + timelinePx * 3f / 8f)),
+            currentDay = currentDay,
             onPick = { day ->
                 val now = System.currentTimeMillis()
                 showTime(day + (now - localMidnight(now)))
@@ -772,7 +804,7 @@ private fun GuideRow(
     windowStart: Long,
     windowEnd: Long,
     now: Long,
-    scrollPx: Int,
+    scrollPx: () -> Int,
     focusRequester: FocusRequester,
     selectedRow: Boolean,
     cursorTime: Long,

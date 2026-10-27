@@ -7,6 +7,18 @@
 > Issue numbers that are part of a title are fine; explanatory parentheticals are not. The detail —
 > what, why, files and verification — belongs in the commit message, never here.
 
+## Unreleased
+
+### ✨ New features
+- **⚡ Search: the poster backdrop is blurred once, and blurred on Android 11 and older too** (community PR #268 by @sarmadsoomro)
+- **🖼️ More posters kept in memory, so Home scrolls cleaner** (community PR #267 by @sarmadsoomro)
+- **📺 Smoother TV Guide scrolling** (community PR #266 by @sarmadsoomro)
+
+### 🐛 Fixes
+- **Home: the last card of a row stays on screen when it has focus** (community PR #314 by @arch-fan)
+- **Setup: the choice cards line up when one has a shorter line** (community PR #315 by @arch-fan)
+- **The update popup's What's new scrolls with Up and Down** (community PR #291 by @camchis)
+
 ## v5.2.1 — 2026-10-21
 
 ### ✨ New features
