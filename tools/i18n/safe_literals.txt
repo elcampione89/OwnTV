@@ -195,7 +195,6 @@
 1	url	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	w1280
 1	technical	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	·
 1	technical	app/src/main/java/tv/own/owntv/features/movies/MoviesScreen.kt	◀
-1	empty	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	\0
 1	protocol	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Accept
 1	log	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Panel reply has no portal list
 1	log	app/src/main/java/tv/own/owntv/features/panel/OwnTVPanel.kt	Panel returned HTTP ${response.code}
