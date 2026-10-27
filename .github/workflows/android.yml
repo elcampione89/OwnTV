@@ -114,7 +114,12 @@ jobs:
       - name: Unit tests
         run: |
           chmod +x ./gradlew
-          ./gradlew testStandardDebugUnitTest --stacktrace
+          set -o pipefail
+          # OwnTV Panel mod: surface Gradle's failure summary as annotations (readable via the API).
+          if ! ./gradlew testStandardDebugUnitTest --stacktrace 2>&1 | tee gradle-test.log; then
+            grep -E -A25 "What went wrong|^e: " gradle-test.log | grep -v "^\s*at " | head -40 | while IFS= read -r l; do echo "::error::$l"; done
+            exit 1
+          fi
 
       # abortOnError = true in app/build.gradle.kts, so this fails the job on a lint error.
       - name: Lint
