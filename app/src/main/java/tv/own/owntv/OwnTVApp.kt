@@ -141,6 +141,7 @@ class OwnTVApp : Application(), SingletonImageLoader.Factory, androidx.work.Conf
                     this@OwnTVApp,
                     GlobalContext.get().get<okhttp3.OkHttpClient>(),
                     GlobalContext.get().get<tv.own.owntv.core.backup.BackupManager>(),
+                    GlobalContext.get().get<tv.own.owntv.core.settings.SettingsRepository>(),
                 )
             }
         }

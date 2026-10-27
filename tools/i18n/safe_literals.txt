@@ -213,9 +213,15 @@
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	../settings/
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	OwnTVPanel
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	X-OwnTV-Key
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	__PANEL_BACKGROUND__
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	announcement
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	announcement_seen
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	applied panel look $revision
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	applied panel settings $revision
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	background HTTP ${r.code}
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	background url
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	background_url
+3	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	bg_image_path
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	config HTTP ${r.code}
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	config/
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	config: ${it.message}
@@ -223,19 +229,25 @@
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	http://
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	https://
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	id
+1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	look: ${t.message}
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	null
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	options
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	owntv_panel
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel-background-
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel-background.tmp
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel-settings.own
 2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	panel_only
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	password
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	portal_urls
-1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	revision
-1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings
+2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	revision
+2	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings HTTP ${r.code}
 1	log	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings: ${t.message}
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	settings_rev
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	text
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	title
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	ui
+1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	ui_rev
 1	technical	app/src/main/java/tv/own/owntv/features/panel/PanelConfig.kt	url
 5	empty	app/src/main/java/tv/own/owntv/features/profiles/ProfileComponents.kt	\0
 1	technical	app/src/main/java/tv/own/owntv/features/profiles/ProfilePictureChooser.kt	bmp

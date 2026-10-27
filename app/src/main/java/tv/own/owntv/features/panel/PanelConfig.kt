@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import tv.own.owntv.core.backup.BackupManager
+import tv.own.owntv.core.settings.SettingsRepository
 import java.io.File
 
 /** App switches managed in the OwnTV Panel (App page). */
@@ -41,6 +42,9 @@ object PanelConfig {
     private const val K_PORTAL_URLS = "portal_urls"
     private const val K_SETTINGS_REV = "settings_rev"
     private const val K_ANN_SEEN = "announcement_seen"
+    private const val K_UI_REV = "ui_rev"
+    private const val BACKGROUND_MARKER = "__PANEL_BACKGROUND__"
+    private const val BACKGROUND_PREFIX = "panel-background-"
 
     private val _options = MutableStateFlow(PanelOptions())
     val options: StateFlow<PanelOptions> = _options.asStateFlow()
@@ -85,7 +89,12 @@ object PanelConfig {
     }
 
     /** Fetches the panel's config and applies it. Never throws; a panel that is down changes nothing. */
-    suspend fun sync(context: Context, client: OkHttpClient, backup: BackupManager) = withContext(Dispatchers.IO) {
+    suspend fun sync(
+        context: Context,
+        client: OkHttpClient,
+        backup: BackupManager,
+        settingsRepo: SettingsRepository,
+    ) = withContext(Dispatchers.IO) {
         val p = prefs(context)
 
         // Portal addresses, so playlists made from them can be recognised (and hidden) later.
@@ -119,14 +128,27 @@ object PanelConfig {
             }
         }
 
-        val settings = root.optJSONObject("settings") ?: return@withContext
+        val settingsApplied = applySettingsFile(context, client, backup, configUrl, root.optJSONObject("settings"))
+        applyLook(context, client, settingsRepo, configUrl, root.optJSONObject("ui"), force = settingsApplied)
+    }
+
+    /** The App page's settings backup. Returns true when it was (re)applied this time. */
+    private suspend fun applySettingsFile(
+        context: Context,
+        client: OkHttpClient,
+        backup: BackupManager,
+        configUrl: okhttp3.HttpUrl,
+        settings: JSONObject?,
+    ): Boolean {
+        val p = prefs(context)
+        if (settings == null) return false
         val revision = settings.optString("revision")
-        if (revision.isBlank() || revision == p.getString(K_SETTINGS_REV, null)) return@withContext
-        val fileUrl = configUrl.resolve(settings.optString("url", "../settings/")) ?: return@withContext
+        if (revision.isBlank() || revision == p.getString(K_SETTINGS_REV, null)) return false
+        val fileUrl = configUrl.resolve(settings.optString("url", "../settings/")) ?: return false
         val password = settings.optString("password").takeIf { it.isNotBlank() }
 
         val file = File(context.cacheDir, "panel-settings.own")
-        try {
+        return try {
             client.newCall(panelRequest(fileUrl.toString())).execute().use { r ->
                 if (!r.isSuccessful) error("settings HTTP ${r.code}")
                 file.outputStream().use { out -> r.body.byteStream().copyTo(out) }
@@ -141,11 +163,56 @@ object PanelConfig {
             ).getOrThrow()
             p.edit().putString(K_SETTINGS_REV, revision).apply()
             Log.i(TAG, "applied panel settings $revision")
+            true
         } catch (t: Throwable) {
             // Not recorded as applied, so the next start tries again.
             Log.w(TAG, "settings: ${t.message}")
+            false
         } finally {
             file.delete()
+        }
+    }
+
+    /**
+     * The Look page: OwnTV setting keys and values, handed to OwnTV's own settings importer (which
+     * checks every key and value). Applied after the settings file, and again whenever that file is,
+     * so the panel's look always wins over it.
+     */
+    private suspend fun applyLook(
+        context: Context,
+        client: OkHttpClient,
+        settingsRepo: SettingsRepository,
+        configUrl: okhttp3.HttpUrl,
+        ui: JSONObject?,
+        force: Boolean,
+    ) {
+        val p = prefs(context)
+        if (ui == null) { p.edit().remove(K_UI_REV).apply(); return }
+        val revision = ui.optString("revision")
+        if (revision.isBlank() || (!force && revision == p.getString(K_UI_REV, null))) return
+        val values = ui.optJSONObject("settings") ?: JSONObject()
+        try {
+            val bgUrl = ui.optString("background_url").takeIf { it.isNotBlank() && it != "null" }
+            if (bgUrl != null) {
+                // A new name per revision, so screens keyed on the picture's path redraw it.
+                context.filesDir.listFiles { f -> f.name.startsWith(BACKGROUND_PREFIX) }?.forEach { it.delete() }
+                val target = File(context.filesDir, BACKGROUND_PREFIX + revision)
+                val url = configUrl.resolve(bgUrl) ?: error("background url")
+                client.newCall(panelRequest(url.toString())).execute().use { r ->
+                    if (!r.isSuccessful) error("background HTTP ${r.code}")
+                    val tmp = File(context.cacheDir, "panel-background.tmp")
+                    tmp.outputStream().use { out -> r.body.byteStream().copyTo(out) }
+                    if (!tmp.renameTo(target)) { tmp.copyTo(target, overwrite = true); tmp.delete() }
+                }
+                values.put("bg_image_path", target.absolutePath)
+            } else if (values.optString("bg_image_path") == BACKGROUND_MARKER) {
+                values.remove("bg_image_path")
+            }
+            settingsRepo.importSettings(values, keepDeviceSettings = false)
+            p.edit().putString(K_UI_REV, revision).apply()
+            Log.i(TAG, "applied panel look $revision")
+        } catch (t: Throwable) {
+            Log.w(TAG, "look: ${t.message}")
         }
     }
 
