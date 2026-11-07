@@ -17,6 +17,16 @@
 1	app/src/main/java/tv/own/owntv/features/customize/CustomizeScreen.kt	hid:${entry.key}
 1	app/src/main/java/tv/own/owntv/features/customize/CustomizeViewModel.kt	Custom
 1	app/src/main/java/tv/own/owntv/features/customize/MoveToCategoryDialog.kt	new
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	\0
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	h$i
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	p${it.index}-${list[it.index].startMs}
+2	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	·
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	▲ ▼
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	▶
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	▼
+2	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	◀ ▶
+1	app/src/main/java/tv/own/owntv/features/epg/ProgrammeDayPage.kt	✓
+1	app/src/main/java/tv/own/owntv/features/live/LiveScreen.kt	programme_details
 8	app/src/main/java/tv/own/owntv/features/settings/DnsSettingsScreen.kt	\0
 1	app/src/main/java/tv/own/owntv/features/settings/DnsSettingsScreen.kt	${cfg.host}$p
 1	app/src/main/java/tv/own/owntv/features/settings/DnsSettingsScreen.kt	:${cfg.port}
@@ -25,6 +35,7 @@
 1	app/src/main/java/tv/own/owntv/features/settings/OpenSubtitlesViewModel.kt	OpenSubtitles
 1	app/src/main/java/tv/own/owntv/features/settings/OpenSubtitlesViewModel.kt	manual refresh failed: ${it.javaClass.simpleName}: ${it.message}
 1	app/src/main/java/tv/own/owntv/features/settings/OpenSubtitlesViewModel.kt	sign-in failed: ${e.javaClass.simpleName}: ${e.message}
+2	app/src/main/java/tv/own/owntv/features/settings/SettingsHelpTable.kt	vp_preview_on_ok
 1	app/src/main/java/tv/own/owntv/features/settings/SettingsViewModel.kt	UnknownHostException
 1	app/src/main/java/tv/own/owntv/features/settings/SettingsViewModel.kt	dns.google
 1	app/src/main/java/tv/own/owntv/features/settings/SettingsViewModel.kt	refused
@@ -34,6 +45,8 @@
 1	app/src/main/java/tv/own/owntv/features/settings/VideoPlayerSettingsScreen.kt	#BDBDBD
 1	app/src/main/java/tv/own/owntv/features/settings/VideoPlayerSettingsScreen.kt	#FFEB3B
 2	app/src/main/java/tv/own/owntv/features/settings/VideoPlayerSettingsScreen.kt	#FFFFFF
+4	app/src/main/java/tv/own/owntv/features/settings/VideoPlayerSettingsScreen.kt	vp_preview_on_ok
+1	app/src/main/java/tv/own/owntv/features/shell/components/ChannelBrowserOverlay.kt	◀
 1	app/src/main/java/tv/own/owntv/features/shell/components/MediaDetailsScreen.kt	\0
 1	app/src/main/java/tv/own/owntv/ui/components/ColorPicker.kt	#%06X
 1	app/src/main/java/tv/own/owntv/ui/components/TextInputDialog.kt	\0

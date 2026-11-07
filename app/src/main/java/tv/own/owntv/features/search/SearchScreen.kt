@@ -43,10 +43,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -94,7 +91,6 @@ import tv.own.owntv.ui.stage.PlaylistMark
 import tv.own.owntv.ui.stage.StageKeyHints
 import tv.own.owntv.ui.stage.StagePlaylistMark
 import tv.own.owntv.ui.stage.StageRow
-import tv.own.owntv.ui.stage.StageSearchField
 import tv.own.owntv.ui.stage.StageSurface
 import tv.own.owntv.ui.stage.StageTab
 import tv.own.owntv.ui.stage.StageTag
@@ -185,7 +181,6 @@ fun SearchScreen(
     val fieldFocus = remember { FocusRequester() }
     val filterFocus = remember { SearchKind.entries.associateWith { FocusRequester() } }
     val jumpFocus = remember { FocusRequester() }
-    val scheduleFocus = remember { FocusRequester() }
     val rowFocus = remember { HashMap<String, FocusRequester>() }
     fun requesterFor(key: String) = rowFocus.getOrPut(key) { FocusRequester() }
 
@@ -205,8 +200,7 @@ fun SearchScreen(
     // The preview plays only while the user is on a channel row (or its schedule), never just because
     // a channel is the first result under the field.
     var listHasFocus by remember { mutableStateOf(false) }
-    var scheduleHasFocus by remember { mutableStateOf(false) }
-    val activeChannel = active?.channel()?.takeIf { showingResults && (listHasFocus || scheduleHasFocus) }
+    val activeChannel = active?.channel()?.takeIf { showingResults && listHasFocus }
     val previewOn = previewEnabled && livePreviewSetting
 
     // A channel shows Live TV's preview: the same guide lookup, and the same 700 ms settle before playing.
@@ -295,16 +289,13 @@ fun SearchScreen(
         } else {
             Text(stringResource(R.string.search_title), style = stageText(46, 800, (-1).mpxSp), color = StageColors.Text, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = titleModifier)
         }
-        StageSearchField(
+        SearchFieldRow(
             query = query,
             onQueryChange = vm::setQuery,
-            placeholder = stringResource(R.string.search_field_hint),
-            modifier = Modifier
-                .padding(start = listX, top = 118.mpx)
-                .width(listW)
-                .focusRequester(fieldFocus)
-                // ▼ lands on a filter button that is on, not whichever one is nearest below.
-                .focusProperties { down = if (searching) filterEntry else if (!showingResults) jumpFocus else FocusRequester.Default },
+            fieldFocus = fieldFocus,
+            // ▼ lands on a filter button that is on, not whichever one is nearest below.
+            focusDown = if (searching) filterEntry else if (!showingResults) jumpFocus else FocusRequester.Default,
+            modifier = Modifier.padding(start = listX, top = 118.mpx).width(listW),
         )
 
         if (!showingResults) {
@@ -399,14 +390,7 @@ fun SearchScreen(
                                 title = name.name, line = AnnotatedString(line), tags = name.tags, mark = marks[ch.sourceId],
                                 onClick = { goTo(e) },
                                 leading = { LivePlate(ch.displayLogoUrl, 76.mpx, 54.mpx) },
-                                modifier = rowModifier.onPreviewKeyEvent { k ->
-                                    // ▶ reaches the schedule under the preview, as on Live TV.
-                                    if (k.type == KeyEventType.KeyDown && k.key == Key.DirectionRight && nowNext?.next != null) {
-                                        runCatching { scheduleFocus.requestFocus() }.getOrDefault(false)
-                                    } else {
-                                        false
-                                    }
-                                },
+                                modifier = rowModifier,
                             )
                         }
                         is Entry.Programme -> {
@@ -455,11 +439,7 @@ fun SearchScreen(
                     previewEngine = liveVm.previewEngine,
                     showVideo = previewOn,
                     singleSessionBlocked = singleSessionBlocked,
-                    scheduleFocus = scheduleFocus,
-                    // Search only shows: a programme picked here goes to the channel, where its menu lives.
-                    onOpenProgramme = { goTo(active) },
-                    onBackToList = { runCatching { requesterFor(active.key).requestFocus() } },
-                    modifier = panelModifier.onFocusChanged { scheduleHasFocus = it.hasFocus },
+                    modifier = panelModifier,
                 )
                 active is Entry.Movie -> PosterPanel(
                     movieTitleInfo(active.movie, focusedMeta?.takeIf { it.first == active.key }?.second, metadataMode.tmdbWins),
@@ -488,7 +468,6 @@ fun SearchScreen(
                         },
                     ),
                 )
-                if (active?.channel() != null) add("▶" to stringResource(R.string.content_key_schedule))
             }
             if (showingResults) {
                 add("▲" to stringResource(R.string.common_search))
