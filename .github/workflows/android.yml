@@ -242,7 +242,12 @@ jobs:
           chmod +x ./gradlew
           if [ -n "$KEYSTORE_FILE" ]; then
             echo "Building signed release APKs (both ABI flavors)"
-            ./gradlew assembleRelease --stacktrace
+            set -o pipefail
+            # OwnTV Panel mod: surface Gradle's failure summary as annotations (readable via the API).
+            if ! ./gradlew assembleRelease --stacktrace 2>&1 | tee gradle-build.log; then
+              grep -E -A25 "What went wrong|^e: |Exception" gradle-build.log | grep -v "^\s*at " | head -40 | while IFS= read -r l; do echo "::error::$l"; done
+              exit 1
+            fi
             # Product flavors split the output by flavor subfolder:
             #   standard/release  -> arm (arm64-v8a + armeabi-v7a) — the main download
             #   x86_64/release    -> x86_64 — emulator / rare x86 box
